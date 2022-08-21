@@ -11,6 +11,12 @@ struct ContentView: View {
     
     @State private var isAnimation: Bool = false
     @State private var imageScale: CGFloat = 1.0
+    @State private var imageOffset: CGSize = .zero
+    
+    private func restImageState() {
+        imageScale = 1
+        imageOffset = .zero
+    }
     
     var body: some View {
         NavigationView {
@@ -23,19 +29,32 @@ struct ContentView: View {
                     .padding()
                     .shadow(color: .black.opacity(0.2), radius: 12, x: 2, y: 2)
                     .opacity(isAnimation ? 1 : 0)
+                    .animation(.linear(duration: 1), value: isAnimation)
+                    .offset(imageOffset)
                     .scaleEffect(imageScale)
+                // MARK: - Double Tap Gesture
                     .onTapGesture(count: 2) {
                         if imageScale == 1.0 {
-                            withAnimation(.spring()) {
-                                imageScale = 5.0
-                            }
+                            imageScale = 5.0
                         } else {
-                            withAnimation(.spring()) {
-                                imageScale = 1.0
-                            }
+                            restImageState()
                         }
-                    }
-                    .animation(.linear(duration: 1), value: isAnimation)
+                    } //: double tap gesture
+                    .animation(.spring(), value: imageScale)
+                // MARK: - Drag Gesture
+                    .gesture(
+                        DragGesture()
+                            .onChanged { gesture in
+                                imageOffset = gesture.translation
+                            }
+                            .onEnded { _ in
+                                if imageScale <= 1 {
+                                    restImageState()
+                                }
+                            }
+                    ) //: drag gesture
+                    .animation(.linear(duration: 1), value: imageOffset)
+                
             } //: ZStack
             .navigationTitle("Pinch & Zoom")
             .navigationBarTitleDisplayMode(.inline)
