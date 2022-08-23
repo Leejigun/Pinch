@@ -12,6 +12,7 @@ struct ContentView: View {
     @State private var isAnimation: Bool = false
     @State private var imageScale: CGFloat = 1.0
     @State private var imageOffset: CGSize = .zero
+    @State private var isDrawerOpen: Bool = false
     
     private func resetImageState() {
         imageScale = 1
@@ -132,6 +133,33 @@ struct ContentView: View {
                 }
                     .padding(.bottom, 30)
                 , alignment: .bottom
+            )
+            // MARK: - Drawer
+            .overlay(
+                HStack {
+                    // Header
+                    Image(systemName: isDrawerOpen ? "chevron.compact.right" : "chevron.compact.left")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(height: 40)
+                        .padding(8)
+                        .foregroundStyle(.secondary)
+                        .onTapGesture(perform: {
+                            isDrawerOpen.toggle()
+                        })
+                    
+                    // Thumbnails
+                    Spacer()
+                }
+                    .padding(EdgeInsets(top: 16, leading: 8, bottom: 16, trailing: 8))
+                    .background(.ultraThinMaterial)
+                    .cornerRadius(12)
+                    .opacity(isAnimation ? 1 : 0)
+                    .frame(width: 260)
+                    .padding(.top, UIScreen.main.bounds.height / 12)
+                    .offset(x: isDrawerOpen ? 20 : 215)
+                    .animation(.spring(), value: isDrawerOpen)
+                , alignment: .topTrailing
             )
         } //: NavigationView
         .navigationViewStyle(.stack)
