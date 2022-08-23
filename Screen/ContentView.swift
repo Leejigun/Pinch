@@ -14,6 +14,9 @@ struct ContentView: View {
     @State private var imageOffset: CGSize = .zero
     @State private var isDrawerOpen: Bool = false
     
+    let pages: [Page] = pageData
+    @State private var pageIndex: Int = 0
+    
     private func resetImageState() {
         imageScale = 1
         imageOffset = .zero
@@ -25,7 +28,7 @@ struct ContentView: View {
                 Color.clear
                 
                 // MARK: - Page Image
-                Image("thumb-magazine-front-cover")
+                Image(pages[pageIndex].imageName)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .cornerRadius(10)
@@ -149,6 +152,20 @@ struct ContentView: View {
                         })
                     
                     // Thumbnails
+                    ForEach(pages) { item in
+                        Image(item.thumbnailName)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 80)
+                            .cornerRadius(8)
+                            .shadow(radius: 4)
+                            .opacity(isDrawerOpen ? 1 : 0)
+                            .animation(.easeOut(duration: 0.5), value: isDrawerOpen)
+                            .onTapGesture(perform: {
+                                isAnimation = true
+                                pageIndex = item.id
+                            })
+                    }
                     Spacer()
                 }
                     .padding(EdgeInsets(top: 16, leading: 8, bottom: 16, trailing: 8))
